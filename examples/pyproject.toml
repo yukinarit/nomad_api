@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "examples"
+version = "0.0.1"
+description = "Async aware Nomad API client written in Python"
+authors = ["Yukinari Tani <yukinarit84@gmail.com>"]
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+pyserde = "^0.3.1"
+#pyserde = {path = "/home/AD/yukinari.tani/repos/pyserde"}
+aiohttp = "^3.7.4"
+nomad_api = {path = "/home/AD/yukinari.tani/repos/nomad_api"}
+
+
+[tool.poetry.dev-dependencies]
+pytest = "^6.2.2"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

@@ -1,0 +1,37 @@
+[tool.poetry]
+name = "nomad_api"
+version = "0.0.1"
+description = "Hashicorp Nomad API client written in modern Python"
+authors = ["yukinarit <yukinarit84@gmail.com>"]
+license = "MIT"
+packages = [
+    {include = "nomad"}
+]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+pyserde = "^0.3.1"
+aiohttp = "^3.7.4"
+
+[tool.poetry.dev-dependencies]
+pytest = "^6.2.2"
+pysen = {version = "0.9.1", extras = ["lint"]}
+pdoc = "^6.4.2"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pysen]
+version = "0.9"
+
+[tool.pysen.lint]
+enable_black = true
+enable_flake8 = true
+enable_isort = true
+enable_mypy = true
+mypy_preset = "strict"
+line_length = 100
+py_version = "py38"
+[[tool.pysen.lint.mypy_targets]]
+paths = ["."]
