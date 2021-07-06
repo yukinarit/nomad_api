@@ -1,62 +1,80 @@
 import json
+import logging
 from dataclasses import dataclass, field
 from typing import AsyncGenerator, Optional
 
 import aiohttp
-from nomad.models import event_stream
-from nomad.models.job import Job
+from nomad.models import WriteOptions, event_stream
+from nomad.models.job import Job, RegisterOptions
 from serde.json import from_json
+
+log = logging.getLogger("nomad")
 
 
 @dataclass
 class Config:
     """ Nomad Client Config """
 
-    timeout: int = 3600  # Timeout for HTTP client.
+    timeout: int = 60 * 60 * 24 * 365 * 10  # Timeout for HTTP client.
     token: str = ""  # Nomad API token.
 
 
 @dataclass
 class Client:
-    """ Nomad API Async Client """
+    """
+    Nomad API Async Client
+    """
 
     addr: str  # Nomad Address.
-    cfg: Optional[Config] = None
-    cli: Optional[aiohttp.ClientSession] = field(init=False, default=None)
+    cfg: Optional[Config] = field(default_factory=Config)
+    ses: Optional[aiohttp.ClientSession] = field(init=False, default=None)
 
     async def __aenter__(self):
-        opts = {}
-        if self.cfg:
-            opts["timeout"] = aiohttp.ClientTimeout(total=self.cfg.timeout)
+        opts = {"timeout": aiohttp.ClientTimeout(total=self.cfg.timeout)}
 
         headers = {}
-        if self.cfg and self.cfg.token:
+        if self.cfg.token:
             headers["X-Nomad-Token"] = self.cfg.token
-        self.cli = aiohttp.ClientSession(headers=headers, **opts)
+
+        self.ses = aiohttp.ClientSession(headers=headers, **opts)
         return self
 
     async def __aexit__(self, exc_type, exc, tb):
-        await self.cli.close()
+        await self.ses.close()
+
+    def _check_session(self) -> aiohttp.ClientSession:
+        """
+        Check session is established
+        """
+        if not self.ses:
+            raise Exception("Client session isn't started")
+        return self.ses
 
     async def event_stream(self) -> AsyncGenerator[event_stream.Events, None]:
-        """ Subscribe event_stream """
-        if not self.cli:
-            raise Exception("Client session isn't started")
-
-        async with self.cli.get(self.addr + "/v1/event/stream") as reader:
+        """
+        Subscribe event_stream
+        """
+        ses = self._check_session()
+        async with ses.get(self.addr + "/v1/event/stream") as reader:
             async for raw in reader.content:
                 line = raw.strip().decode()
+                log.debug(f"Raw response: {line}")
+
                 if not line or not json.loads(line):
                     continue
-                events = from_json(event_stream.Events, line)
-                yield events
+                yield from_json(event_stream.Events, line)
+
+    async def register_job(
+        self, job: Job, opts: Optional[RegisterOptions] = None, wopts: Optional[WriteOptions] = None
+    ):
+        pass
 
     async def job(self, name: str) -> Job:
-        """ Get job """
-        if not self.cli:
-            raise Exception("Client session isn't started")
-
-        async with self.cli.get(self.addr + f"/v1/job/{name}") as res:
+        """
+        Get job
+        """
+        ses = self._check_session()
+        async with ses.get(self.addr + f"/v1/job/{name}") as res:
             text = await res.text()
             status = res.status
             if status != 200:
@@ -64,11 +82,11 @@ class Client:
             return from_json(Job, text)
 
     async def jobs(self) -> list[Job]:
-        """ Get job """
-        if not self.cli:
-            raise Exception("Client session isn't started")
-
-        async with self.cli.get(self.addr + "/v1/jobs") as res:
+        """
+        Get jobs
+        """
+        ses = self._check_session()
+        async with ses.get(self.addr + "/v1/jobs") as res:
             text = await res.text()
             status = res.status
             if status != 200:

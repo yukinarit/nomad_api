@@ -11,6 +11,7 @@ There is already [python-nomad](https://github.com/jrxFive/python-nomad) library
 ## Installation
 
 `nomad_api` requires Python 3.9.
+
 * pip
     ```
     pip install nomad_api
@@ -21,7 +22,7 @@ There is already [python-nomad](https://github.com/jrxFive/python-nomad) library
     ```
 * poetry
     ```
-	poetry add nomad_api
+    poetry add nomad_api
     ```
 
 ## Usage
@@ -29,7 +30,7 @@ There is already [python-nomad](https://github.com/jrxFive/python-nomad) library
 ```python
 async with nomad.Client("http://localhost:4646") as cli:
     for job in await cli.jobs():
-	    print(job)
+        print(job)
 ```
 
 ## Supported APIs

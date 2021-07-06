@@ -4,7 +4,7 @@ from nomad import Client
 
 
 async def main():
-    async with Client("http://localhost:4646") as cli:
+    async with Client("http://10.128.120.102:4646/") as cli:
         async for events in cli.event_stream():
             print(events)
 

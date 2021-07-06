@@ -6,12 +6,39 @@ The models defined in this module can be found
 [here](https://github.com/hashicorp/nomad/blob/v1.0.4/api/jobs.go)
 in Hashicorp Nomad project.
 """
+from __future__ import annotations
+
 from dataclasses import dataclass, field
 from typing import Optional
 
 from nomad.models.constraint import Constraint
 from nomad.models.task import Affinity, TaskGroup
 from serde import deserialize, serialize
+
+
+@deserialize(rename_all="pascalcase")
+@serialize(rename_all="pascalcase")
+@dataclass
+class RegisterRequest:
+    """ RegisterRequest """
+
+    job: Job
+    enforce_index: bool
+    modify_index: int
+    policy_override: bool
+    preserve_counts: bool
+
+
+@deserialize(rename_all="pascalcase")
+@serialize(rename_all="pascalcase")
+@dataclass
+class RegisterOptions:
+    """ RegisterOptions model """
+
+    enforce_index: bool
+    modify_index: int
+    policy_override: bool
+    preserve_counts: bool
 
 
 @deserialize(rename_all="pascalcase")

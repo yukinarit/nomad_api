@@ -156,53 +156,6 @@ class HostVolumeInfo:
 @deserialize(rename_all="pascalcase")
 @serialize(rename_all="pascalcase")
 @dataclass
-class Node:
-    """ Node model """
-
-    id: str = field(metadata={"serde_rename": "ID"})
-    datacenter: str
-    name: str
-    http_addr: str = field(metadata={"serde_rename": "HTTPAddr"})
-    tls_enabled: bool = field(metadata={"serde_rename": "TLSEnabled"})
-    attributes: dict[str, str]
-    resources: Resources
-    reserved: Resources
-    node_resources: "NodeResources"
-    reserved_resources: "NodeReservedResources"
-    links: dict[str, str]
-    meta: dict[str, str]
-    node_class: str
-    drain: bool
-    drain_strategy: Optional[DrainStrategy]
-    scheduling_eligibility: str
-    status: str
-    status_description: str
-    status_updated_at: int
-    events: list[NodeEvent]
-    drivers: Optional[dict[str, DriverInfo]]
-    host_volumes: Optional[dict[str, HostVolumeInfo]]
-    csi_controller_plugins: Optional[dict[str, CSIInfo]]
-    csi_node_plugins: Optional[dict[str, CSIInfo]]
-    create_index: int
-    modify_index: int
-
-
-@deserialize(rename_all="pascalcase")
-@serialize(rename_all="pascalcase")
-@dataclass
-class NodeResources:
-    """ NodeResources model """
-
-    cpu: "NodeCpuResources"
-    memory: "NodeMemoryResources"
-    disk: "NodeDiskResources"
-    networks: Optional[list[NetworkResource]]
-    devices: Optional[list[NodeDeviceResource]]
-
-
-@deserialize(rename_all="pascalcase")
-@serialize(rename_all="pascalcase")
-@dataclass
 class NodeCpuResources:
     """ NodeCpuResources model """
 
@@ -236,4 +189,51 @@ class NodeReservedResources:
     cpu: NodeCpuResources
     memory: NodeMemoryResources
     disk: NodeDiskResources
-    networks: "NodeReservedResources"
+    # networks: NodeReservedResources
+
+
+@deserialize(rename_all="pascalcase")
+@serialize(rename_all="pascalcase")
+@dataclass
+class NodeResources:
+    """ NodeResources model """
+
+    cpu: NodeCpuResources
+    memory: "NodeMemoryResources"
+    disk: "NodeDiskResources"
+    networks: Optional[list[NetworkResource]]
+    devices: Optional[list[NodeDeviceResource]]
+
+
+@deserialize(rename_all="pascalcase")
+@serialize(rename_all="pascalcase")
+@dataclass
+class Node:
+    """ Node model """
+
+    id: str = field(metadata={"serde_rename": "ID"})
+    datacenter: str
+    name: str
+    http_addr: str = field(metadata={"serde_rename": "HTTPAddr"})
+    tls_enabled: bool = field(metadata={"serde_rename": "TLSEnabled"})
+    attributes: dict[str, str]
+    resources: Resources
+    reserved: Resources
+    node_resources: NodeResources
+    reserved_resources: NodeReservedResources
+    links: dict[str, str]
+    meta: dict[str, str]
+    node_class: str
+    drain: bool
+    drain_strategy: Optional[DrainStrategy]
+    scheduling_eligibility: str
+    status: str
+    status_description: str
+    status_updated_at: int
+    events: list[NodeEvent]
+    drivers: Optional[dict[str, DriverInfo]]
+    host_volumes: Optional[dict[str, HostVolumeInfo]]
+    # csi_controller_plugins: Optional[dict[str, CSIInfo]]
+    # csi_node_plugins: Optional[dict[str, CSIInfo]]
+    create_index: int
+    modify_index: int

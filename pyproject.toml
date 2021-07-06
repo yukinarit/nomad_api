@@ -10,13 +10,13 @@ packages = [
 
 [tool.poetry.dependencies]
 python = "^3.9"
-pyserde = "^0.3.1"
-aiohttp = "^3.7.4"
+pyserde = "*"
+aiohttp = "^3"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.2"
 pysen = {version = "0.9.1", extras = ["lint"]}
-pdoc = "^6.4.2"
+pdoc = "^6.4"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
